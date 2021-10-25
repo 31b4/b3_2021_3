@@ -1,0 +1,16 @@
+body {
+    background-color: black;
+}
+
+#canvas {
+    border:1px solid #ffffff;
+    padding: 5px;
+}
+
+#mainDiv {
+    padding-top: 10px;
+    width: 80%;
+}
+div#menu div{
+    text-align: center;
+}
