@@ -1,5 +1,8 @@
 body {
-    background-color: black;
+    background-image: url('/img/matrix.jpg');
+    background-size: cover;
+    background-color: rgb(44, 44, 44);
+  
 }
 
 #canvas {
@@ -14,6 +17,7 @@ body {
     padding-top: 10px;
     width: 80%;
     margin: auto auto;
+    padding-bottom: 150px;
 }
 div#menu div{
     text-align: center;
@@ -26,4 +30,25 @@ div#menu div button{
     background-color: whitesmoke;
     width: 70px;
     height: 40px;
+}
+
+
+h1{
+    text-align: center;
+    color:rgba(0, 195, 255, 0.822);
+    text-shadow:2px 2px 1px rgb(1, 45, 66);
+}
+div#vezerlo{
+    width: 70%;
+    margin: auto auto;
+    
+}
+#StartGomb{
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+    width: 60px;
+    height: 40px;
+    margin-bottom: 20px;
 }
