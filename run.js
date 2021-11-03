@@ -1,21 +1,24 @@
-var kepXPos;
-var kepYPos;
 var c 
 var ctx ;
 var ido;
 var kepekPos = new Array();
+var pontszam=0;
+
+
 function VeletlenSzam(meddig,mennyitol) {
     return Math.floor(Math.random()*(meddig-mennyitol+1))+mennyitol
 }
 function KepGen() {
     var volt = false;
+    let kepXPos;
+    let kepYPos;
     while (true) {
         volt = false;
         kepXPos = VeletlenSzam(895,5)
         kepYPos = VeletlenSzam(595,5)
         for (let i = 0; i < kepekPos.length; i++) {
-            if (kepXPos+100 >= kepekPos[i][0]  && kepXPos <= kepekPos[i][0]+100) {
-                if (kepYPos+100 >= kepekPos[i][1] && kepYPos <= kepekPos[i][1]+100) {
+            if (kepXPos+150 >= kepekPos[i][0]  && kepXPos <= kepekPos[i][0]+150) {
+                if (kepYPos+150 >= kepekPos[i][1] && kepYPos <= kepekPos[i][1]+150) {
                     volt = true; //a kepxpos csak 1 pont es nem a kep terulete ez is hiba meg amugy sem mukodik, hozok kavet xd
                     break;  // jól teszed
                 }
@@ -25,39 +28,64 @@ function KepGen() {
             break;
         }
     }   
-    kepekPos.push([kepXPos,kepYPos])
-    console.log(kepekPos[0][0])
-    console.log(kepekPos);
+    let tipus=VeletlenSzam(11,2);
+    
+    kepekPos.push([kepXPos,kepYPos,tipus])
+    console.log(kepekPos)
     var img = new Image();
-    img.src = 'img/'+VeletlenSzam(2,11)+".png";
+    img.src = 'img/'+tipus+".png";
     img.addEventListener("load", ()=>{
         ctx.drawImage(img, kepXPos, kepYPos,100,100);
-        ctx.beginPath();
-        console.log("kep x: "+ kepXPos + " kep y: " + kepYPos);
-    },false)
+    })
+
+    setTimeout(()=>{
+        ctx.clearRect(kepXPos, kepYPos,100,100);
+        let i=0;
+        // console.log(kepekPos,kepXPos,kepYPos);
+        while (i<kepekPos.length && (kepekPos[i][0]!=kepXPos || kepekPos[i][1]!=kepYPos)) {
+            i++;
+        }
+        // console.log(i);
+        kepekPos.splice(i,1);
+    }, 3000);
+    ctx.beginPath();
     
 }
 function KepTorles(x,y){
-    console.log(kepekPos)
+    // console.log(kepekPos,x,y)
     for (let i = 0; i < kepekPos.length; i++) {
         if (x >= kepekPos[i][0]  && x <= kepekPos[i][0]+100) {
             if (y >= kepekPos[i][1] && y <= kepekPos[i][1]+100) {
                 ctx.clearRect(kepekPos[i][0], kepekPos[i][1], 100, 100);
-                console.log("itt vagyok");
-                kepekPos.splice(i,1);
-                for (let i = 0; i < kepekPos.length; i++) {
-                    var img = new Image();
-                    img.src = 'img/'+VeletlenSzam(2,11)+".png";
-                    img.addEventListener("load", ()=>{
-                    ctx.drawImage(img, kepXPos, kepYPos,100,100);
-                    ctx.beginPath();
-                    console.log("kep x: "+ kepXPos + " kep y: " + kepYPos);
-                },false)
-                    
+                
+                if (kepekPos[i][2]%2==0) {
+                    pontszam+=10;
                 }
-                break;          
+                else{
+                    pontszam-=5;
+                }
+                console.log("pont: "+pontszam)
+                kepekPos.splice(i,1);
+                console.log("töröltünk egy elemet");
+                
+                //ujraMegrajzolMindent();    
             }
         }
+    }
+    
+}
+
+function ujraMegrajzolMindent() {
+    ctx.clearRect(0,0,1000,700)
+
+    for (let i = 0; i < kepekPos.length; i++) {
+        var img = new Image();
+        img.src = 'img/'+kepekPos[i][2]+".png";
+        img.addEventListener("load", ()=>{
+            ctx.drawImage(img, kepekPos[i][0],  kepekPos[i][1],100,100);
+            ctx.beginPath();
+            //console.log("kep x: "+ kepekPos[i][0] + " kep y: " + kepekPos[i][1]);
+        },false)
     }
 }
 
@@ -66,21 +94,12 @@ function Kepeltunes() {
         let a = kepekPos[0];
         ctx.clearRect(a[0],a[1],100,100)
         kepekPos.splice(0,1);
-    }
-    ctx.clearRect(0,0,1000,700)
-    for (let i = 0; i < kepekPos.length; i++) {
-        var img = new Image();
-        img.src = 'img/'+VeletlenSzam(2,11)+".png";
-        img.addEventListener("load", ()=>{
-        ctx.drawImage(img, kepXPos, kepYPos,100,100);
-        ctx.beginPath();
-        console.log("kep x: "+ kepXPos + " kep y: " + kepYPos);
-    },false)
-        
+        console.log("töröltünk egy elemet");
+        //ujraMegrajzolMindent();
     }
 }
 
-function Visszaszamlalo(idozito, kepidozito, kepeltunes){
+function Visszaszamlalo(idozito, kepidozito/*, kepeltunes*/){
     ido--;
     let idoDiv = document.getElementById("ido");
     idoDiv.innerHTML="";
@@ -95,23 +114,25 @@ function Visszaszamlalo(idozito, kepidozito, kepeltunes){
     if (ido == 0) {
         clearInterval(idozito);
         clearInterval(kepidozito);
-        clearInterval(kepeltunes)
+        //clearInterval(kepeltunes)
         VezerloGomb();
         idoDiv.innerHTML="";
         document.getElementById("elsoSzint").disabled = false;
         document.getElementById("masodikSzint").disabled = false;
         document.getElementById("HarmadikSzint").disabled = false;
+        alert(pontszam)
+        pontszam = 0;
     }
 }
 
-function VezerloGomb() {
+function VezerloGomb(gyorsitas) {
     ido = 30;
     var vezerlo = document.getElementById("vezerlo");
     vezerlo.innerHTML="";
     var button = document.createElement("button");
     button.innerHTML="Start";
     button.id="StartGomb";
-    button.onclick= function(){StartGen()}
+    button.onclick= function(){StartGen(gyorsitas)}
     
     vezerlo.appendChild(button);
     kepekPos = [];
@@ -126,33 +147,37 @@ function SzintValasztas() {
     p.style.textAlign="center"
     p.innerText="A játékmezőn mappák fognak megjelenni. Amelyikben iratok láthazók azok a haszons adatok a többi fölösleges. Kattints a hasznos mappákra mielőtt még eltűnnének.\nHa készen álsz a játékra akkor nyomj a Start gombra. Egy perced lesz minnél több jó mappára rákottintani de vigyáz a rossz mappára kattintásért pont levonás jár."
     fajl.appendChild(p)
-    VezerloGomb();
+    
 }
 
-function StartGen() {
+function StartGen(gyorsitas) {
+    console.log("gyors "+ gyorsitas)
     document.getElementById("elsoSzint").disabled = true;
     document.getElementById("masodikSzint").disabled = true;
     document.getElementById("HarmadikSzint").disabled = true;
     document.getElementById("tajekoztato").innerHTML="";
     document.getElementById("vezerlo").removeChild(document.getElementById("StartGomb"))
     akcioban = true;
-    var idozito = setInterval(() => {Visszaszamlalo(idozito,kepidozito,kepeltunes)}, 1000);
-    var kepidozito = setInterval(() => {KepGen()}, VeletlenSzam(2,1)*1000);
-    var kepeltunes = setInterval(() => {Kepeltunes()}, 3000);
+    var idozito = setInterval(() => {Visszaszamlalo(idozito,kepidozito/*,kepeltunes*/)}, 1000);
+    var kepidozito = setInterval(() => {KepGen()}, VeletlenSzam(3,1)*gyorsitas);
+    //var kepeltunes = setInterval(() => {Kepeltunes()}, 1000);
 }
 
-function Main() {
+function Main(szam) {
     c = document.getElementById("canvas");
     ctx = c.getContext("2d");
     ctx.clearRect(0,0,c.offsetWidth,c.offsetHeight); 
-    if (document.getElementById("elsoSzint")) {
-        SzintValasztas()        
+    if (szam==1) {
+        SzintValasztas()  
+        VezerloGomb(1000);      
     }
-    else if (document.getElementById("masodikSzint")){
-        KepGen();
+    else if (szam==2){
+        SzintValasztas();
+        VezerloGomb(700);
     }
-    else{
-        KepGen();
+    else if(szam==3){
+        SzintValasztas();
+        VezerloGomb(300);
     }   
 }
 
@@ -173,7 +198,5 @@ function getPosition(event) {
     }       
     x -= c.offsetLeft;
     y -= c.offsetTop;
-    console.log("x: " + x + "  y: " + y)
-    console.log("kep x: "+ kepXPos + " kep y: " + kepYPos)
     KepTorles(x,y);
 }
