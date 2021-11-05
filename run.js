@@ -109,7 +109,7 @@ function Visszaszamlalo(idozito, kepidozito/*, kepeltunes*/){
     p.style.fontWeight="bold";
     p.style.fontSize="40px"
     p.style.font="Roboto Mono, monospace";
-    p.style.textAlign="center"
+     p.style.textAlign="center"
     idoDiv.appendChild(p)
     if (ido == 0) {
         clearInterval(idozito);
@@ -120,6 +120,9 @@ function Visszaszamlalo(idozito, kepidozito/*, kepeltunes*/){
         document.getElementById("elsoSzint").disabled = false;
         document.getElementById("masodikSzint").disabled = false;
         document.getElementById("HarmadikSzint").disabled = false;
+        document.getElementById("xtrido").remove();
+        document.getElementById("dltbad").remove();
+
         alert(pontszam)
         pontszam = 0;
     }
@@ -135,6 +138,7 @@ function VezerloGomb(gyorsitas) {
     button.onclick= function(){StartGen(gyorsitas)}
     
     vezerlo.appendChild(button);
+    
     kepekPos = [];
     ctx.clearRect(0,0,1000,700)
 }
@@ -149,7 +153,34 @@ function SzintValasztas() {
     fajl.appendChild(p)
     
 }
+function DeleteBad(){
+    document.getElementById("dltbad").disabled = true;
+    for (let i = 0; i < kepekPos.length; i++) {
+        if (kepekPos[i][2]%2!=0) {
+            ctx.clearRect(kepekPos[i][0], kepekPos[i][1], 100, 100);
+            kepekPos.splice(i,1);
+        }
+    }
+}
+function ExtraTime(){
+    document.getElementById("xtrido").disabled = true;
+    ido+= 10;
 
+}
+function ExtraHelpek(){
+    var g1 = document.getElementById("gomb1")
+    var extraIdo = document.createElement("button")
+    extraIdo.innerHTML="Extra idő"
+    extraIdo.id="xtrido";
+    extraIdo.onclick=function() {ExtraTime()}
+    g1.appendChild(extraIdo)
+    var g2 = document.getElementById("gomb2")
+    var deleteRossz = document.createElement("button")
+    deleteRossz.innerHTML="Rossz törlése"
+    deleteRossz.id="dltbad";
+    deleteRossz.onclick=function(){DeleteBad()}
+    g2.appendChild(deleteRossz)
+}
 function StartGen(gyorsitas) {
     console.log("gyors "+ gyorsitas)
     document.getElementById("elsoSzint").disabled = true;
@@ -157,6 +188,8 @@ function StartGen(gyorsitas) {
     document.getElementById("HarmadikSzint").disabled = true;
     document.getElementById("tajekoztato").innerHTML="";
     document.getElementById("vezerlo").removeChild(document.getElementById("StartGomb"))
+    ExtraHelpek()
+
     akcioban = true;
     var idozito = setInterval(() => {Visszaszamlalo(idozito,kepidozito/*,kepeltunes*/)}, 1000);
     var kepidozito = setInterval(() => {KepGen()}, VeletlenSzam(3,1)*gyorsitas);
